@@ -1,25 +1,30 @@
 import asyncio
 from websockets.server import serve
-from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
+from websockets.exceptions import ConnectionClosed
 
-import Ultrasonic_Avoidance
-import Line_Follower
+from Ultrasonic_Avoidance import Ultrasonic_Avoidance
+from Line_Follower import Line_Follower
 
 async def handle_client(websocket):
+    Ultra = Ultrasonic_Avoidance(17)
+    Line = Line_Follower()
     async def sender():
-        Ultra = Ultrasonic_Avoidance(17)
-        Line = Line_Follower()
         while True:
-            # Code des capteurs
-            data = {"UltraValue": Ultra.get_distance(),
-                    "LineValue": Line.read_analog()}
-            await websocket.send(str(data))
-            await asyncio.sleep(0.5)  # fréquence d’envoi
+            try:
+                data = {
+                    "UltraValue": Ultra.get_distance(),
+                    "LineValue": Line.read_analog()
+                }
+                await websocket.send(str(data))
+                await asyncio.sleep(0.05)
+            except ConnectionClosed:
+                break
 
     async def receiver():
         async for message in websocket:
-            # commandes moteurs
-            i = 0
+            print("Commande reçue :", message)
+
+            pass
 
     send_task = asyncio.create_task(sender())
     recv_task = asyncio.create_task(receiver())
@@ -35,6 +40,6 @@ async def handle_client(websocket):
 async def main():
     async with serve(handle_client, None, 8765):
         print("Serveur WebSocket démarré sur le port 8765")
-        await asyncio.Future()  # run forever
+        await asyncio.Future()
 
 asyncio.run(main())
