@@ -1,4 +1,7 @@
 picar/Godot/
 picar/SunFounder_PiCar/
-picar/SunFounder_PiCar-S/
+
+picar/SunFounder_PiCar-S/.gitignore
+picar/SunFounder_PiCar-S/.gitmodules
+picar/SunFounder_PiCar-S/.git/
 picar/.venv/
