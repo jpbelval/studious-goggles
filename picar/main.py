@@ -4,10 +4,16 @@ from websockets.exceptions import ConnectionClosed
 
 from Ultrasonic_Avoidance import Ultrasonic_Avoidance
 from Line_Follower import Line_Follower
+import picar
+from picar import back_wheels
 
 async def handle_client(websocket):
     Ultra = Ultrasonic_Avoidance(17)
     Line = Line_Follower()
+    bw = back_wheels.Back_Wheels(db='config')
+    forward_speed = 90
+    bw.forward()
+    bw.speed = forward_speed
     async def sender():
         while True:
             try:
@@ -38,6 +44,7 @@ async def handle_client(websocket):
         task.cancel()
 
 async def main():
+    picar.setup()
     async with serve(handle_client, None, 8765):
         print("Serveur WebSocket démarré sur le port 8765")
         await asyncio.Future()
