@@ -4,7 +4,7 @@ import math
 import time
 
 class Line_Follower(object):
-	def __init__(self, address=0x11, references=[5, 5, 5, 5, 5]):
+	def __init__(self, address=0x11, references=[230, 230, 230, 230, 230]):
 		self.bus = smbus.SMBus(1)
 		self.address = address
 		self._references = references
