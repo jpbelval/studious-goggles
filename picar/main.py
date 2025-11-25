@@ -39,8 +39,12 @@ async def handle_client(websocket):
                 print("Speed", forward_speed)
                 print("Angle", angle)
                 fw.turn(angle)
-                bw.forward()
-                bw.speed = forward_speed
+                if(forward_speed < 0):
+                    bw.backward()
+                    bw.speed = forward_speed * -1
+                else:
+                    bw.forward()
+                    bw.speed = forward_speed
                 await asyncio.sleep(0.05)
             except Exception as e:
                 print(e)
