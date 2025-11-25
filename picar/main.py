@@ -26,6 +26,7 @@ async def handle_client(websocket):
                     "Test": Line.read_analog()
                 }
                 await websocket.send(str(data))
+                await asyncio.sleep(0.001)
             except ConnectionClosed:
                 break
 
