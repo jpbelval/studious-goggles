@@ -44,7 +44,7 @@ async def handle_client(websocket):
                 await asyncio.sleep(0.05)
             except Exception as e:
                 print(e)
-                break;
+                break
 
     send_task = asyncio.create_task(sender())
     recv_task = asyncio.create_task(receiver())
