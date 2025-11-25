@@ -40,6 +40,7 @@ async def handle_client(websocket):
             await fw.turn(angle)
             await bw.forward()
             bw.speed = forward_speed
+            await asyncio.sleep(0.05)
 
     send_task = asyncio.create_task(sender())
     recv_task = asyncio.create_task(receiver())
