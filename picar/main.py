@@ -5,7 +5,7 @@ from websockets.exceptions import ConnectionClosed
 from Ultrasonic_Avoidance import Ultrasonic_Avoidance
 from Line_Follower import Line_Follower
 from SunFounder_PiCar.picar import back_wheels
-from SunFounder_Picar import picar
+from SunFounder_PiCar import picar
 
 async def handle_client(websocket):
     Ultra = Ultrasonic_Avoidance(17)
