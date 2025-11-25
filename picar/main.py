@@ -45,7 +45,6 @@ async def handle_client(websocket):
                 else:
                     bw.forward()
                     bw.speed = forward_speed
-                await asyncio.sleep(0.05)
             except Exception as e:
                 print(e)
                 break
