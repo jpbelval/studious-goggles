@@ -1,19 +1,24 @@
 import asyncio
 from websockets.server import serve
 from websockets.exceptions import ConnectionClosed
-
+import json
 from Ultrasonic_Avoidance import Ultrasonic_Avoidance
 from Line_Follower import Line_Follower
-import picar
-from picar import back_wheels
+from SunFounder_PiCar.picar import back_wheels, front_wheels
+from SunFounder_PiCar import picar
+
+# 0: Puissance
+# 1: Angle
 
 async def handle_client(websocket):
     Ultra = Ultrasonic_Avoidance(17)
     Line = Line_Follower()
     bw = back_wheels.Back_Wheels(db='config')
-    forward_speed = 90
-    bw.forward()
-    bw.speed = forward_speed
+    fw = front_wheels.Front_Wheels(db='config')
+    bw.ready()
+    fw.ready()
+    fw.turning_max = 45
+
     async def sender():
         while True:
             try:
@@ -29,7 +34,12 @@ async def handle_client(websocket):
     async def receiver():
         async for message in websocket:
             print("Commande reçue :", message)
-
+            engine = json.loads(message)
+            forward_speed = engine["0"]
+            angle = engine["1"]
+            fw.turn(angle)
+            bw.forward()
+            bw.speed = forward_speed
             pass
 
     send_task = asyncio.create_task(sender())
