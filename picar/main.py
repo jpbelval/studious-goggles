@@ -15,8 +15,6 @@ async def handle_client(websocket):
     Line = Line_Follower()
     bw = back_wheels.Back_Wheels(db='config')
     fw = front_wheels.Front_Wheels(db='config')
-    bw.ready()
-    fw.ready()
     fw.turning_max = 45
 
     async def sender():
@@ -34,7 +32,7 @@ async def handle_client(websocket):
 
     async def receiver():
         async for message in websocket:
-            engine = await json.loads(message)
+            engine = json.loads(message)
             forward_speed = engine["0"]
             angle = engine["1"]
             print("Speed", engine["0"])
