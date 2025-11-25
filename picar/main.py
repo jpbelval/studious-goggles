@@ -24,7 +24,8 @@ async def handle_client(websocket):
             try:
                 data = {
                     "UltraValue": Ultra.get_distance(),
-                    "LineValue": Line.read_analog()
+                    "LineValue": Line.read_digital(),
+                    "Test": Line.read_analog()
                 }
                 await websocket.send(str(data))
                 await asyncio.sleep(0.05)
