@@ -4,7 +4,7 @@ import math
 import time
 
 class Line_Follower(object):
-	def __init__(self, address=0x11, references=[8, 8, 8, 8, 8]):
+	def __init__(self, address=0x11, references=[5, 5, 5, 5, 5]):
 		self.bus = smbus.SMBus(1)
 		self.address = address
 		self._references = references
@@ -48,7 +48,7 @@ class Line_Follower(object):
 			elif lt[i] < self._references[i]:
 				digital_list.append(1)
 			else:
-				digital_list.append(-1)
+				digital_list.append(0)
 		return digital_list
 
 	def get_average(self, mount):
