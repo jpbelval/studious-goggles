@@ -32,15 +32,19 @@ async def handle_client(websocket):
 
     async def receiver():
         async for message in websocket:
-            engine = json.loads(message)
-            forward_speed = engine["0"]
-            angle = engine["1"]
-            print("Speed", engine["0"])
-            print("Angle", engine["1"])
-            await fw.turn(angle)
-            await bw.forward()
-            bw.speed = forward_speed
-            await asyncio.sleep(0.05)
+            try:
+                engine = json.loads(message)
+                forward_speed = engine["0"]
+                angle = engine["1"]
+                print("Speed", engine["0"])
+                print("Angle", engine["1"])
+                await fw.turn(angle)
+                await bw.forward()
+                bw.speed = forward_speed
+                await asyncio.sleep(0.05)
+            except Exception as e:
+                print(e)
+                break;
 
     send_task = asyncio.create_task(sender())
     recv_task = asyncio.create_task(receiver())
