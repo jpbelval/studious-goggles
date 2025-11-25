@@ -36,8 +36,8 @@ async def handle_client(websocket):
                 engine = json.loads(message)
                 forward_speed = engine["0"]
                 angle = engine["1"]
-                print("Speed", engine["0"])
-                print("Angle", engine["1"])
+                print("Speed", int(engine["0"]))
+                print("Angle", int(engine["1"]))
                 fw.turn(angle)
                 bw.forward()
                 bw.speed = forward_speed
