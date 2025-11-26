@@ -63,10 +63,11 @@ async def handle_client(websocket):
 
     async def process_latest():
         global latest_message
-        message = latest_message
+        while True:
+            message = latest_message
 
-        if message == latest_message and message is not None:
-            await update_car(message)
+            if message == latest_message and message is not None:
+                await update_car(message)
 
     async def update_car(message):
         engine = json.loads(message)
