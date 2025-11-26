@@ -16,6 +16,9 @@ bw = back_wheels.Back_Wheels(db='config')
 fw = front_wheels.Front_Wheels(db='config')
 fw.turning_max = 45
 
+latest_message = None
+processing_task = None
+
 async def handle_client(websocket):
     loop = asyncio.get_running_loop()
     alive = asyncio.Event()
@@ -66,6 +69,9 @@ async def handle_client(websocket):
             await update_car(message)
 
     async def update_car(message):
+
+
+	print(message)
         engine = json.loads(message)
         forward_speed = int(engine["0"])
         angle = int(engine["1"])
