@@ -25,19 +25,19 @@ async def handle_client(websocket):
         while alive.is_set():
             try:
                 distance = await loop.run_in_executor(None, Ultra.get_distance)
-                line_d  = await loop.run_in_executor(None, Line.read_digital)
-                line_a  = await loop.run_in_executor(None, Line.read_analog)
+                #line_d  = await loop.run_in_executor(None, Line.read_digital)
+                #line_a  = await loop.run_in_executor(None, Line.read_analog)
                 line_r  = await loop.run_in_executor(None, Line.read_raw)
 
                 data = {
                     "UltraValue": distance,
-                    "LineValue": line_d,
-                    "Analog": line_a,
+                    #"LineValue": line_d,
+                    #"Analog": line_a,
                     "Raw": line_r
                 }
 
                 await websocket.send(json.dumps(data))
-                await asyncio.sleep(0.02)
+                await asyncio.sleep(0.01)
 
             except ConnectionClosed:
                 alive.clear()
