@@ -69,9 +69,7 @@ async def handle_client(websocket):
             await update_car(message)
 
     async def update_car(message):
-
-
-	print(message)
+        print(message)
         engine = json.loads(message)
         forward_speed = int(engine["0"])
         angle = int(engine["1"])
