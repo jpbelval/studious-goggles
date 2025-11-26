@@ -27,11 +27,13 @@ async def handle_client(websocket):
                 distance = await loop.run_in_executor(None, Ultra.get_distance)
                 line_d  = await loop.run_in_executor(None, Line.read_digital)
                 line_a  = await loop.run_in_executor(None, Line.read_analog)
+                line_r  = await loop.run_in_executor(None, Line.read_raw)
 
                 data = {
                     "UltraValue": distance,
                     "LineValue": line_d,
-                    "Test": line_a
+                    "Analog": line_a,
+                    "Raw": line_r
                 }
 
                 await websocket.send(json.dumps(data))
