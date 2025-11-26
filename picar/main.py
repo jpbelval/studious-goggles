@@ -10,55 +10,72 @@ from SunFounder_PiCar import picar
 # 0: Puissance
 # 1: Angle
 
+Ultra = Ultrasonic_Avoidance(17)
+Line = Line_Follower()
+bw = back_wheels.Back_Wheels(db='config')
+fw = front_wheels.Front_Wheels(db='config')
+fw.turning_max = 45
+
 async def handle_client(websocket):
-    Ultra = Ultrasonic_Avoidance(17)
-    Line = Line_Follower()
-    bw = back_wheels.Back_Wheels(db='config')
-    fw = front_wheels.Front_Wheels(db='config')
-    fw.turning_max = 45
+    loop = asyncio.get_running_loop()
+    alive = asyncio.Event()
+    alive.set()
 
     async def sender():
-        while True:
+        while alive.is_set():
             try:
+                distance = await loop.run_in_executor(None, Ultra.get_distance)
+                line_d  = await loop.run_in_executor(None, Line.read_digital)
+                line_a  = await loop.run_in_executor(None, Line.read_analog)
+
                 data = {
-                    "UltraValue": Ultra.get_distance(),
-                    "LineValue": Line.read_digital(),
-                    "Test": Line.read_analog()
+                    "UltraValue": distance,
+                    "LineValue": line_d,
+                    "Test": line_a
                 }
-                await websocket.send(str(data))
-                await asyncio.sleep(0.001)
+
+                await websocket.send(json.dumps(data))
+                await asyncio.sleep(0.02)
+
             except ConnectionClosed:
-                break
+                alive.clear()
 
     async def receiver():
-        async for message in websocket:
-            try:
+        try:
+            async for message in websocket:
                 engine = json.loads(message)
                 forward_speed = int(engine["0"])
                 angle = int(engine["1"])
-                print("Speed", forward_speed)
-                print("Angle", angle)
+
                 fw.turn(angle)
-                if(forward_speed < 0):
+
+                if forward_speed < 0:
                     bw.backward()
-                    bw.speed = forward_speed * -1
+                    bw.speed = -forward_speed
                 else:
                     bw.forward()
                     bw.speed = forward_speed
-            except Exception as e:
-                print(e)
-                break
+
+        except ConnectionClosed:
+            pass
+        finally:
+            alive.clear()
+            bw.speed = 0
 
     send_task = asyncio.create_task(sender())
     recv_task = asyncio.create_task(receiver())
 
-    done, pending = await asyncio.wait(
+    await asyncio.wait(
         [send_task, recv_task],
-        return_when=asyncio.FIRST_EXCEPTION
+        return_when=asyncio.FIRST_COMPLETED
     )
 
-    for task in pending:
-        task.cancel()
+    for task in (send_task, recv_task):
+        if not task.done():
+            task.cancel()
+
+    alive.clear()
+
 
 async def main():
     picar.setup()
