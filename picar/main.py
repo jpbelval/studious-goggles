@@ -65,7 +65,7 @@ async def handle_client(websocket):
         global latest_message
         message = latest_message
 
-        if message == latest_message:
+        if message == latest_message and message is not None:
             await update_car(message)
 
     async def update_car(message):
