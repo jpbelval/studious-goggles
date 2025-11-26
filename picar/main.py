@@ -52,9 +52,6 @@ async def handle_client(websocket):
             async for message in websocket:
                 latest_message = message
 
-                if processing_task is None or processing_task.done():
-                    processing_task = asyncio.create_task(process_latest)
-
         except ConnectionClosed:
             pass
         finally:
