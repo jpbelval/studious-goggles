@@ -40,7 +40,7 @@ async def handle_client(websocket):
                 }
 
                 await websocket.send(json.dumps(data))
-                await asyncio.sleep(0.0005)
+                await asyncio.sleep(0.01)
 
             except ConnectionClosed:
                 alive.clear()
