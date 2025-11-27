@@ -18,7 +18,7 @@ bw = back_wheels.Back_Wheels(db='config')
 fw = front_wheels.Front_Wheels(db='config')
 car = {
     "speed": 0,
-    "angle": 0
+    "angle": 90
 }
 fw.turning_max = 45
 
@@ -88,8 +88,8 @@ async def handle_client(websocket):
         async for message in websocket:
             try:
                 engine = json.loads(message)
-                car["angle"] = int(engine["0"])
-                car["speed"] = int(engine["1"])
+                car["speed"] = int(engine["0"])
+                car["angle"] = int(engine["1"])
             except ValueError:
                 pass
     except ConnectionClosed:
