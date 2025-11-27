@@ -89,7 +89,7 @@ async def handle_client(websocket):
             try:
                 engine = json.loads(message)
                 car["angle"] = int(engine["0"])
-                car["speed"] = int(engine("1"))
+                car["speed"] = int(engine["1"])
             except ValueError:
                 pass
     except ConnectionClosed:
