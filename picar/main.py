@@ -46,11 +46,20 @@ async def handle_client(websocket):
                 alive.clear()
 
     async def receiver():
-        global latest_message, processing_task
-
         try:
             async for message in websocket:
-                latest_message = message
+                engine = json.loads(message)
+                forward_speed = int(engine["0"])
+                angle = int(engine["1"])
+
+                fw.turn(angle)
+
+                if forward_speed < 0:
+                    bw.backward()
+                    bw.speed = -forward_speed
+                else:
+                    bw.forward()
+                    bw.speed = forward_speed
 
         except ConnectionClosed:
             pass
@@ -58,38 +67,15 @@ async def handle_client(websocket):
             alive.clear()
             bw.speed = 0
 
-    async def process_latest():
-        global latest_message
-        while True:
-            message = latest_message
-
-            if message == latest_message and message is not None:
-                await update_car(message)
-
-    async def update_car(message):
-        engine = json.loads(message)
-        forward_speed = int(engine["0"])
-        angle = int(engine["1"])
-
-        fw.turn(angle)
-
-        if forward_speed < 0:
-            bw.backward()
-            bw.speed = -forward_speed
-        else:
-            bw.forward()
-            bw.speed = forward_speed
-
     send_task = asyncio.create_task(sender())
     recv_task = asyncio.create_task(receiver())
-    process_task = asyncio.create_task(process_latest())
 
     await asyncio.wait(
-        [send_task, recv_task, process_task],
-        return_when=asyncio.ALL_COMPLETED
+        [send_task, recv_task],
+        return_when=asyncio.FIRST_COMPLETED
     )
 
-    for task in (send_task, recv_task, process_task):
+    for task in (send_task, recv_task):
         if not task.done():
             task.cancel()
 
