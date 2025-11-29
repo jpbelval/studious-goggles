@@ -9,6 +9,7 @@ from SunFounder_PiCar import picar
 
 # 0: Puissance
 # 1: Angle
+THEORIC_MIDDLE_ANGLE = 100
 
 Ultra = Ultrasonic_Avoidance(17)
 Line = Line_Follower()
@@ -16,9 +17,33 @@ bw = back_wheels.Back_Wheels(db='config')
 fw = front_wheels.Front_Wheels(db='config')
 fw.turning_max = 45
 
+
 latest_message = None
 processing_task = None
 
+def drive_differentiel(turn_angle, speed):
+
+    turn_sensitivity = 0.8 # a ajuster
+
+    turn_factor = (turn_angle - THEORIC_MIDDLE_ANGLE) / fw.turning_max
+
+    if speed < 0:
+        bw.backward()
+        speed = -speed
+    else:
+        bw.forward()
+
+    if turn_factor < 0: # Gauche
+        bw.left_wheel.speed = speed * (1 - (abs(turn_factor) * turn_sensitivity))
+        bw.right_wheel.speed = speed
+    elif turn_factor > 0:
+        bw.left_wheel.speed = speed
+        bw.right_wheel.speed = speed * (1 - (abs(turn_factor) * turn_sensitivity))
+    else:
+        bw.left_wheel.speed = speed
+        bw.right_wheel.speed = speed
+    
+    
 async def handle_client(websocket):
     loop = asyncio.get_running_loop()
     alive = asyncio.Event()
@@ -28,14 +53,10 @@ async def handle_client(websocket):
         while alive.is_set():
             try:
                 distance = await loop.run_in_executor(None, Ultra.get_distance)
-                #line_d  = await loop.run_in_executor(None, Line.read_digital)
-                #line_a  = await loop.run_in_executor(None, Line.read_analog)
                 line_r  = await loop.run_in_executor(None, Line.read_raw)
 
                 data = {
                     "UltraValue": distance,
-                    #"LineValue": line_d,
-                    #"Analog": line_a,
                     "Raw": line_r
                 }
 
@@ -54,12 +75,7 @@ async def handle_client(websocket):
 
                 fw.turn(angle)
 
-                if forward_speed < 0:
-                    bw.backward()
-                    bw.speed = -forward_speed
-                else:
-                    bw.forward()
-                    bw.speed = forward_speed
+                drive_differentiel(angle, forward_speed)
 
         except ConnectionClosed:
             pass
