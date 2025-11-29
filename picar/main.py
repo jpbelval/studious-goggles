@@ -6,6 +6,7 @@ from Ultrasonic_Avoidance import Ultrasonic_Avoidance
 from Line_Follower import Line_Follower
 from SunFounder_PiCar.picar import back_wheels, front_wheels
 from SunFounder_PiCar import picar
+import time
 
 # 0: Puissance
 # 1: Angle
@@ -16,6 +17,8 @@ Line = Line_Follower()
 bw = back_wheels.Back_Wheels(db='config')
 fw = front_wheels.Front_Wheels(db='config')
 fw.turning_max = 45
+
+LINE_ULTRA_TICKRATE = 60
 
 
 latest_message = None
@@ -52,6 +55,8 @@ async def handle_client(websocket):
     async def sender():
         while alive.is_set():
             try:
+                start_time = time.time()
+
                 distance = await loop.run_in_executor(None, Ultra.get_distance)
                 line_r  = await loop.run_in_executor(None, Line.read_raw)
 
@@ -61,7 +66,11 @@ async def handle_client(websocket):
                 }
 
                 await websocket.send(json.dumps(data))
-                await asyncio.sleep(0.01)
+                
+                elapsed = time.time() - start_time
+                sleep_time = (1/LINE_ULTRA_TICKRATE) - elapsed
+                if sleep_time > 0:
+                    await asyncio.sleep(sleep_time)
 
             except ConnectionClosed:
                 alive.clear()
