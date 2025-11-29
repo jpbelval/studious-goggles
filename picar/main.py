@@ -36,10 +36,10 @@ def drive_differentiel(turn_angle, speed):
     else:
         bw.forward()
 
-    if turn_factor < 0: # Gauche
+    if turn_factor > 0: # Gauche
         bw.left_wheel.speed = int(speed * (1 - (abs(turn_factor) * turn_sensitivity)))
         bw.right_wheel.speed = int(speed)
-    elif turn_factor > 0:
+    elif turn_factor < 0:
         bw.left_wheel.speed = int(speed)
         bw.right_wheel.speed = int(speed * (1 - (abs(turn_factor) * turn_sensitivity)))
     else:
