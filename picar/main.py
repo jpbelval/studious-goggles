@@ -26,7 +26,7 @@ processing_task = None
 
 def drive_differentiel(turn_angle, speed):
 
-    turn_sensitivity = 0.8 # a ajuster
+    turn_sensitivity = 0.3 # a ajuster
 
     turn_factor = (turn_angle - THEORIC_MIDDLE_ANGLE) / fw.turning_max
 
