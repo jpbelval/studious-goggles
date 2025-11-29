@@ -37,14 +37,14 @@ def drive_differentiel(turn_angle, speed):
         bw.forward()
 
     if turn_factor < 0: # Gauche
-        bw.left_wheel.speed = speed * (1 - (abs(turn_factor) * turn_sensitivity))
-        bw.right_wheel.speed = speed
+        bw.left_wheel.speed = int(speed * (1 - (abs(turn_factor) * turn_sensitivity)))
+        bw.right_wheel.speed = int(speed)
     elif turn_factor > 0:
-        bw.left_wheel.speed = speed
-        bw.right_wheel.speed = speed * (1 - (abs(turn_factor) * turn_sensitivity))
+        bw.left_wheel.speed = int(speed)
+        bw.right_wheel.speed = int(speed * (1 - (abs(turn_factor) * turn_sensitivity)))
     else:
-        bw.left_wheel.speed = speed
-        bw.right_wheel.speed = speed
+        bw.left_wheel.speed = int(speed)
+        bw.right_wheel.speed = int(speed)
     
     
 async def handle_client(websocket):
@@ -66,7 +66,7 @@ async def handle_client(websocket):
                 }
 
                 await websocket.send(json.dumps(data))
-                
+
                 elapsed = time.time() - start_time
                 sleep_time = (1/LINE_ULTRA_TICKRATE) - elapsed
                 if sleep_time > 0:
