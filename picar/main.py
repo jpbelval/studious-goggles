@@ -18,7 +18,7 @@ bw = back_wheels.Back_Wheels(db='config')
 fw = front_wheels.Front_Wheels(db='config')
 fw.turning_max = 45
 
-LINE_ULTRA_TICKRATE = 60
+LINE_ULTRA_TICKRATE = 30
 
 
 latest_message = None
