@@ -29,6 +29,10 @@ def drive_differentiel(turn_angle, speed):
     turn_sensitivity = 0.3 # a ajuster
 
     turn_factor = (turn_angle - THEORIC_MIDDLE_ANGLE) / fw.turning_max
+    if turn_factor > 1:
+        turn_factor = 1
+    elif turn_factor < -1:
+        turn_factor = -1
 
     if speed < 0:
         bw.backward()
